@@ -1,0 +1,81 @@
+What is Linux History & Importance in Modern Infrastructure?
+Answers:-  Linux is an open-source operating system kernel originally developed by Linus Torvalds in 1991. It is widely used in modern infrastructure because it is flexible, reliable, secure, and well suited to automation and large-scale workloads. Linux powers cloud servers, web applications, databases, containers, and Kubernetes environments. In DevOps, Linux is essential for server administration, shell scripting, CI/CD pipelines, application deployment, monitoring, and troubleshooting. For example, I can deploy an application on an AWS EC2 Linux instance, configure Nginx, monitor system resources, and automate deployment using Bash scripts.
+
+What is Popularity of Linux in Cloud?
+Answers:- Linux is popular in cloud computing because it is open source, flexible, scalable, automation-friendly, and well suited to modern application workloads. Major cloud providers such as AWS, GCP, and Azure support Linux virtual machines and container platforms. In DevOps, Linux is extensively used for hosting applications, running Docker containers and Kubernetes nodes, executing CI/CD pipelines, and automating infrastructure through shell scripting. For example, I can deploy a web application on an AWS EC2 Linux instance, configure Nginx, and automate deployments using GitHub Actions. 
+
+Explain Linux architecture. 
+Answers:- Linux architecture consists of hardware, the kernel, system libraries, the shell, and user applications or utilities. Hardware provides the physical resources. The kernel manages processes, memory, filesystems, devices, and networking. System libraries provide reusable functions for applications, while the shell allows users to execute commands and scripts. Applications and utilities perform tasks such as serving web requests, managing files, and monitoring systems. In DevOps, understanding Linux architecture helps troubleshoot application failures, resource issues, permissions, and networking problems on cloud servers. 
+
+What are open-source tools, and what is GitHub? 
+Open-source tools are software tools whose source code is available under licenses that permit use, inspection, modification, and redistribution according to their terms. Examples include Linux, Git, Kubernetes, Terraform.
+ Git is a distributed version control system used to track changes in source code. 
+GitHub is a platform that hosts Git repositories and enables collaboration through branches, pull requests, code reviews, and issue tracking. In DevOps, GitHub can also automate builds, testing, and deployments through GitHub Actions. For example, I can push application code to GitHub and trigger a CI/CD pipeline to deploy the application to an AWS EC2 Linux server. 
+
+What is Filesystem Hierarchy Standard?
+Answers:- The Filesystem Hierarchy Standard (FHS) defines the common directory structure and directory purposes used by Linux.     /etc for configuration, /var/log for logs, /home for user files, /tmp for temporary files, and /usr for applications and utilities. 
+What is the most common mistake in Linux?
+Answers:- The most common Linux mistakes are incorrect file permissions, careless use of sudo, accidental deletion of files, incorrect configuration changes, and failure to check system logs or disk space. For example, if an application fails to start on an AWS EC2 Linux server, I would check its service status, review the logs using journalctl, verify file permissions, and check disk utilization before making changes. This systematic approach helps resolve issues safely and reduces downtime. 
+
+What is the difference between a normal user and a root user in Linux? 
+Answers:- A normal user has limited permissions and is generally used for everyday operations, while the root user is the superuser with UID 0 and extensive administrative privileges. A normal user usually cannot modify protected system files without authorization, whereas root can manage system configurations, users, services, and permissions. In DevOps, I prefer using a normal user with authorized sudo access to perform administrative tasks securely and reduce the risk of accidental system damage. 
+
+What is Creating Linux VM on VirtualBox VMware GCP AWS?
+Answers:- Creating a Linux VM means provisioning a virtual machine and installing or selecting a Linux operating system on it. VirtualBox and VMware are commonly used for local virtualization, while AWS EC2 and GCP Compute Engine provide cloud-based virtual machines. After creating the VM, we configure CPU, memory, storage, networking, and access, then use SSH or a console to administer the Linux system and deploy applications. 
+
+What is Top 40+ Linux Commands — practical usage?
+Answers:- No.       Command                                        Practical usage
+                  1             pwd                 Display the current directory
+                  2              ls                 List files and directories
+                  3             ls -l             Show files with permissions, owner, size, and date
+                  4             ls -la             Include hidden files
+                  5          cd /var/log          Move to the log directory
+                  6              cd ..              Move one directory up
+                  7              cd ~               Move to your home directory
+                  8             tree         Display directories in a tree format (may need installation)
+                  
+
+
+
+
+
+
+
+
+Process and system monitoring commands 
+
+
+
+
+
+
+
+
+
+
+
+What is Password Management & Password Policies with change?
+Answers:- Password management in Linux involves creating, changing, and securing user passwords, while password policies define rules such as password expiration, minimum password age, and expiration warnings. The passwd command is used to set or change a user's password, whereas the chage command manages password aging policies. For example, sudo chage -M 90 username sets the maximum password age to 90 days, and sudo chage -l username displays the user's password aging information. 
+
+What is Linux Day-to-Day Admin Activities in production?
+Answers:- Linux day-to-day administration activities involve monitoring server health, managing users and permissions, checking CPU, memory and disk utilization, monitoring services, reviewing system logs, managing software updates, and troubleshooting application or network issues. For example, I use commands like top to monitor CPU and memory usage, df -h to check disk space, free -h to check memory, systemctl status to verify service status, and journalctl to investigate system logs. I also manage user access, configure permissions, monitor security alerts, and perform backups and routine maintenance. As a DevOps engineer, these activities help me maintain server availability, improve performance, ensure security, and minimize production downtime. 
+
+What is Manage Services?
+Answers:- Service management in Linux involves starting, stopping, restarting, enabling, disabling, and checking the status of system services and applications running on a server. which provides the systemctl command to manage services. For example, systemctl status nginx checks the status of the Nginx service, sudo systemctl start nginx starts the service, sudo systemctl restart nginx restarts it, and sudo systemctl enable nginx configures it to start automatically during system boot. As a DevOps engineer, managing services helps me ensure applications run correctly, recover from failures, and maintain service availability in production environments. 
+
+What are File Permissions in Linux? 
+Answers: - File permissions in Linux define who can read, write, or execute files and directories. Linux provides three basic permission types: read (r), write (w), and execute (x), which can be assigned to the owner, group, and others. Commands such as ls -l help me check permissions, chmod is used to modify permissions, and chown is used to change file ownership. 
+
+What is SSH Key Management?
+Answers:- SSH Key Management is the process of creating, securing, and managing SSH keys to access remote servers securely without using a password. 
+
+What is Public & Private Key Architecture — how it works?
+Answers:- It is a security mechanism that uses two mathematically related keys: a public key, which is shared with the server, and a private key, which is kept secret by the user. During SSH authentication, the server verifies that the client possesses the matching private key, allowing secure access without sending the private key over the network. 
+
+What is Software Management?
+Answers:- Software management in Linux is the process of installing, updating, upgrading, and removing software packages using package managers such as apt or dnf .
+
+What is Server health check framework and automation?
+Answers:- It is a systematic process of monitoring server health by checking CPU, memory, disk space, network connectivity, and service status using automated scripts and monitoring tools. As a DevOps engineer, it helps me detect issues early, generate alerts, reduce manual effort, and maintain server availability in production environments. 
+
+
