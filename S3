@@ -104,3 +104,41 @@ Advanced Safety Layers
 MFA Delete: You can layer Multi-Factor Authentication on top of versioning. When MFA Delete is enabled, permanently deleting an object version or changing the bucket's versioning state requires both your AWS credentials and a valid physical MFA device code (restricted to the account root user).
 S3 Object Lock (Compliance/Governance Mode): If versioning isn't strict enough, Object Lock lets you write WORM (Write Once, Read Many) policies, making it physically impossible for anyone—even root administrators—to delete or overwrite objects for a specified retention period.
 
+
+6. Bucket Policy JSON for Public Access — syntax explained 
+An S3 Bucket Policy is a JSON-based document attached directly to a bucket to define resource-level permissions (specifying who can access the bucket and what actions they can perform).
+When granting public read access (commonly used for static websites or public asset sharing), the policy explicitly allows anonymous internet users to view files.
+Example: Public Read Bucket Policy JSON 
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::my-unique-bucket-name/*"
+    }
+  ]
+}
+
+7. Custom Domain with Route 53 — DNS configuration 
+Linking a custom domain name (like example.com) to an AWS resource (such as an S3 static website, CloudFront distribution, or Load Balancer) using Amazon Route 53 relies on managed DNS components and record configurations.
+Core Concepts
+Hosted Zone:
+A container that holds information about how you want to route traffic on the internet for a specific domain (e.g., example.com).
+Public Hosted Zones handle internet-facing DNS routing, while Private Hosted Zones manage routing inside a VPC.
+DNS Records: Instructions within your hosted zone telling Route 53 how to translate human-friendly domain names into machine-readable IP addresses or AWS endpoints.
+Alias Records (AWS-Specific):
+A proprietary Route 53 extension that maps a domain name directly to an AWS resource (like an S3 website, ELB, or CloudFront distribution).
+Unlike standard CNAME records, Alias records can be used at the apex/root domain (e.g., example.com instead of just [www.example.com](https://www.example.com)) and are free of charge for DNS queries pointing to AWS resources.
+
+8. CloudFront CDN Integration — global distribution 
+Amazon CloudFront is AWS's global Content Delivery Network (CDN). It speeds up web content distribution by caching media, web assets, and dynamic API responses at edge locations worldwide, drastically reducing latency and load on origin servers.
+Core Concepts
+Edge Locations: A global network of data centers that cache content close to end users to deliver low latency.
+Origins: The source backend where original files live (e.g., S3 buckets, Application Load Balancers, or custom HTTP servers).
+Distribution: The CloudFront configuration entity that routes client requests to edge locations and fetches data from origins when uncached.
+
+
+
