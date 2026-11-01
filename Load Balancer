@@ -6,12 +6,14 @@ AWS Elastic Load Balancing (ELB) distributes incoming application traffic across
 - Supports HTTP and HTTPS protocols.
 - Supports path-based routing and host-based routing.
 - Commonly used for web applications and microservices.
+
 Real-time example:
 
 Suppose an application has two services:
 - /payment → Payment EC2 instances.
 - /orders → Order EC2 instances.
 ALB routes requests based on URL paths.
+
 2. Network Load Balancer (NLB)
 - Works at Layer 4 (Transport Layer).
 - Supports TCP, UDP and TLS protocols.
@@ -21,6 +23,7 @@ ALB routes requests based on URL paths.
 Real-time example:
 
 For an online gaming application that requires high performance and low latency, we can use NLB.
+
 3. Gateway Load Balancer (GWLB)
 - Works at Layer 3 (Network Layer).
 - Used to distribute traffic across virtual network appliances.
@@ -29,6 +32,7 @@ For an online gaming application that requires high performance and low latency,
 Real-time example:
 
 When an organization wants to distribute network traffic across multiple firewall appliances, it can use GWLB.
+
 4. Classic Load Balancer (CLB)
 - Older generation of AWS Load Balancer.
 - Supports Layer 4 and Layer 7.
@@ -86,3 +90,54 @@ How it works: Generates a unique hash key based on the client's IP address and r
 
 Best used when: Session persistence is required (e.g., shopping cart data stored locally on a server rather than in a shared database).
 An organization running an older application on EC2 can continue using CLB.
+
+Target Groups & Health Checks — configuration 
+Target Groups (Where Traffic Goes)
+A logical pool of backend servers (VMs, containers, IP addresses) that receive load-balanced traffic.
+Target Type: Identifies targets by Instance ID, IP address, or Lambda function.
+Protocol & Port: The port/protocol (e.g., HTTP:8080) the load balancer uses to forward requests to the target.
+Sticky Sessions: Binds a user's session to one specific target for continuity.
+Deregistration Delay: Pauses before removing a target so active requests can finish safely (connection draining).
+Health Checks (Traffic Safety Pings)
+Automated probes that verify whether a backend target is alive before sending it traffic.
+Endpoint & Protocol: The path pinged to test health (e.g., GET /health).
+Interval & Timeout: How often to check (e.g., every 15s) and how long to wait for a response (e.g., 5s).
+Thresholds: The number of consecutive passes (e.g., 2) or fails (e.g., 3) needed to mark a server Healthy or Unhealthy.
+Success Codes: Acceptable HTTP responses indicating health (e.g., 200 OK).
+
+SSL/TLS Termination at ELB — certificate management 
+How It Works
+Decrypt at Load Balancer: Incoming encrypted HTTPS traffic is decrypted by the load balancer using an SSL certificate.
+Forward to Backends: Traffic is sent to internal targets either as plain HTTP (offloading server CPU load) or re-encrypted HTTPS (end-to-end security).
+Certificate Management
+AWS Certificate Manager (ACM): Provision free SSL certificates that auto-renew, eliminating downtime from expired certs.
+External Uploads (IAM): Import third-party certificates, requiring manual tracking and manual renewal.
+SNI (Server Name Indication): Bind multiple SSL certs to a single load balancer port to serve different domain names (app.com, api.com).
+Core Security Controls
+TLS Policy: Force modern encryption standards (e.g., TLS 1.2 or 1.3 only) to block vulnerable old protocols.
+End-to-End Encryption: Re-encrypt traffic between the load balancer and backends to meet strict compliance rules (PCI-DSS, HIPAA).
+
+Cross-Zone Load Balancing behavior 
+How It Works
+Disabled: Each load balancer node only sends traffic to targets in its own Availability Zone (AZ).
+Enabled: Load balancer nodes share traffic across all healthy targets in all AZs equally.
+Real-World Example
+Imagine you have two Availability Zones (AZ-A and AZ-B) with one server in each zone. Due to user behavior, 90% of your incoming traffic hits AZ-A, and only 10% hits AZ-B.
+Without Cross-Zone (Disabled):
+The load balancer in AZ-A tries to split its 90% traffic across its local server. Result: Your AZ-A server crashes from overload, while your AZ-B server sits mostly idle.
+With Cross-Zone (Enabled):
+The load balancer pools both servers together. Regardless of where the traffic enters, it routes 45% of the total traffic to the server in AZ-A and 45% to the server in AZ-B. Result: Balanced workload and zero downtime.
+
+      High Availability with ELB across multiple AZs 
+Core Architecture
+Multi-Node Setup: AWS automatically provisions a load balancer node in each enabled Availability Zone (AZ).
+DNS Integration: Client DNS queries return IP addresses for nodes across all active zones. If an entire AZ fails, DNS automatically routes traffic away from it.
+Failover Mechanism
+Normal State: Traffic is split across load balancer nodes and backend targets in all active zones.
+AZ Outage: If AZ-A dies, health checks immediately mark its targets as unhealthy.
+Instant Recovery: Traffic is automatically rerouted to surviving targets in AZ-B (zero downtime for users).
+Best Practices for HA
+Use 2–3 AZs: Spread infrastructure across multiple zones to absorb extra traffic if one zone fails.
+Pair with Auto Scaling Groups (ASGs): Ensure backend targets are distributed evenly across your chosen AZs.
+Keep Apps Stateless: Store user sessions in external databases (like Redis or RDS) so users don't lose data if traffic shifts to a different zone.
+
