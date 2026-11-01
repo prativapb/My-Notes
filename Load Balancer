@@ -1,0 +1,88 @@
+ELB Types
+AWS Elastic Load Balancing (ELB) distributes incoming application traffic across multiple targets, such as EC2 instances, containers, and IP addresses, across one or more Availability Zones.
+
+1. Application Load Balancer (ALB)
+- Works at Layer 7 (Application Layer).
+- Supports HTTP and HTTPS protocols.
+- Supports path-based routing and host-based routing.
+- Commonly used for web applications and microservices.
+Real-time example:
+
+Suppose an application has two services:
+- /payment → Payment EC2 instances.
+- /orders → Order EC2 instances.
+ALB routes requests based on URL paths.
+2. Network Load Balancer (NLB)
+- Works at Layer 4 (Transport Layer).
+- Supports TCP, UDP and TLS protocols.
+- Handles millions of requests per second.
+- Provides ultra-low latency.
+- Supports static IP addresses.
+Real-time example:
+
+For an online gaming application that requires high performance and low latency, we can use NLB.
+3. Gateway Load Balancer (GWLB)
+- Works at Layer 3 (Network Layer).
+- Used to distribute traffic across virtual network appliances.
+- Supports security inspection and traffic monitoring.
+- Uses the GENEVE protocol.
+Real-time example:
+
+When an organization wants to distribute network traffic across multiple firewall appliances, it can use GWLB.
+4. Classic Load Balancer (CLB)
+- Older generation of AWS Load Balancer.
+- Supports Layer 4 and Layer 7.
+- Provides basic load balancing.
+- Supports EC2 instances.
+- Generally recommended to migrate to ALB or NLB for modern applications.
+Real-time example:
+
+Feature	ALB	NLB	GWLB	CLB
+Layer	7	4	3	4 & 7
+Protocol	HTTP/HTTPS	TCP/UDP/TLS	IP	TCP/HTTP/HTTPS
+Routing	Path/Host	Connection-based	Appliance-based	Basic
+Main purpose	Web applications	High performance	Security	Legacy apps
+
+How Load Balancers Distribute Traffic across targets
+Load balancers act as the "traffic cops" sitting in front of your servers, routing client requests across multiple backend targets (servers, containers, or virtual machines) to ensure high availability, reliability, and optimal performance.
+
+Core Mechanics of Traffic Distribution
+At a high level, a load balancer receives incoming traffic from clients, evaluates the request, and forwards it to a healthy target using predefined algorithms and health checks.
+
+Listener Configuration: The load balancer listens on a specific port and protocol (e.g., HTTP on port 80, HTTPS on port 443).
+
+Health Checks: Before routing any traffic, the load balancer continuously pings backend targets to verify they are healthy and responding. If a server fails, traffic is automatically rerouted to remaining healthy targets.
+
+Routing Algorithm: Once a request hits the listener, the load balancer applies a specific algorithm to select the best target for that request.
+
+Common Load Balancing Algorithms
+Different algorithms determine how traffic is divided among targets. Here are the most widely used methods:
+
+Round Robin:
+
+How it works: Distributes requests sequentially across the list of servers. The first request goes to Server A, the second to Server B, the third to Server C, and then it loops back to Server A.
+
+Best used when: Servers have roughly equal specifications and workloads are similar.
+
+Weighted Round Robin:
+
+How it works: Similar to standard round robin, but administrators assign a "weight" to each server based on its capacity. A server with a weight of 3 will receive three times as many requests as a server with a weight of 1.
+
+Best used when: Backend servers have varying processing power or hardware specs.
+
+Least Connections:
+
+How it works: Directs new requests to the server that currently has the fewest active connections.
+
+Best used when: Applications involve long-lived sessions (e.g., chat applications or database connections) where server processing times can vary significantly.
+
+Weighted Least Connections:
+
+How it works: Combines the least connections method with server weights, routing traffic based on active connections relative to each server's assigned capacity.
+
+IP Hash (Source IP):
+
+How it works: Generates a unique hash key based on the client's IP address and routes the client to the same server every time.
+
+Best used when: Session persistence is required (e.g., shopping cart data stored locally on a server rather than in a shared database).
+An organization running an older application on EC2 can continue using CLB.
