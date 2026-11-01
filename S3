@@ -1,0 +1,106 @@
+S3 Overview & Core Concepts — buckets objects keys 
+Amazon S3 (Simple Storage Service) is AWS's highly scalable object storage service used to store and retrieve any amount of data from anywhere on the web.
+Think of S3 like a giant cloud-based filing cabinet:
+Bucket = Filing cabinet
+Object = File stored in the cabinet
+Key = Full path/name used to find the file
+1. Bucket
+A bucket is a container that stores objects.
+Characteristics
+Must have a globally unique name across AWS.
+Created in a specific AWS Region.
+Can contain unlimited objects.
+Used to organize storage and manage permissions.
+2. Object
+An object is the actual data stored in S3.
+An object consists of:
+File/Data
+Key (unique identifier)
+Metadata
+Version ID (if versioning is enabled)
+3. Key
+A key is the unique name or path of an object inside a bucket.
+
+
+
+Storage Classes?
+
+Amazon S3 offers a variety of Storage Classes designed to accommodate different access patterns, performance requirements, and cost optimization goals. Across almost all standard classes, S3 maintains an industry-leading 11 nines (99.999999999%) of durability.
+1. General Purpose & High-Performance Tiers
+S3 Standard:
+Best for: Frequently accessed data, active web apps, content delivery, and mobile apps.
+Characteristics: High availability (99.99%), low latency, and no retrieval fees. It is the default storage class.
+S3 Express One Zone:
+Best for: Extremely high-frequency, latency-sensitive workloads (e.g., real-time analytics, machine learning training).
+Characteristics: Stored in a single Availability Zone inside a specialized directory bucket, delivering up to 10x better performance than S3 Standard at a higher storage cost.
+2. Infrequent Access Tiers
+S3 Standard-Infrequent Access (Standard-IA):
+Best for: Data that is accessed less frequently (e.g., backups, older disaster recovery data) but requires rapid access when needed.
+Characteristics: Lower storage cost than S3 Standard, but carries a data retrieval fee and a 30-day minimum storage charge.
+S3 One Zone-Infrequent Access (One Zone-IA):
+Best for: Infrequently accessed data that can be easily recreated (e.g., secondary backup copies).
+Characteristics: Saves roughly 20% compared to Standard-IA by storing data in a single Availability Zone. If that specific AZ suffers a physical disaster, the data is lost.
+3. Automation Tier
+S3 Intelligent-Tiering:
+Best for: Data with unknown, unpredictable, or changing access patterns.
+Characteristics: Automatically moves objects between access tiers (Frequent, Infrequent, and Archive Instant Access) based on traffic patterns without operational overhead or retrieval fees, though a small per-object monitoring fee applies.
+4. Archive Tiers (S3 Glacier Family)
+S3 Glacier Instant Retrieval:
+Best for: Long-term archive data that is accessed rarely (e.g., once a quarter) but still requires millisecond-level retrieval.
+S3 Glacier Flexible Retrieval (formerly S3 Glacier):
+Best for: Long-term backups or compliance records where retrieval can take anywhere from 1 minute to 12 hours (offers Bulk, Standard, and Expedited retrieval options).
+S3 Glacier Deep Archive:
+Best for: Ultra-long-term archiving (7–10+ year retention for regulatory compliance).
+Characteristics: The absolute cheapest storage tier on AWS (fraction of a cent per GB), with retrieval times taking between 12 to 48 hours.
+
+S3 Terminology?
+Here is a quick breakdown of the essential S3 Terminology you need to know:
+Bucket: A logical container or root-level folder used to store objects. Bucket names must be globally unique across all of AWS.
+Object: The actual file stored in S3 (e.g., an image, video, PDF, or database backup). It consists of data, metadata, and a unique key.
+Key: The unique string identifier (name/path) for an object within a bucket (e.g., images/profile.jpg). Every object has exactly one key.
+Prefix: A string at the beginning of an object key used to group and organize data (acting like a folder structure, e.g., logs/2026/).
+Metadata: Name-value pairs that describe an object. Can be system-defined (e.g., content-type, last modified) or user-defined custom tags.
+Versioning: A feature that keeps multiple variants of an object in the same bucket, protecting against accidental deletion or overwriting.
+Lifecycle Policy: A set of rules that automatically transitions objects to cheaper storage classes (e.g., moving from Standard to Glacier) or deletes them after a set time.
+Pre-signed URL: A temporary URL generated with security credentials that grants time-limited permission to download or upload a specific S3 object.
+Cross-Region Replication (CRR): Automatically and asynchronously copies objects across buckets located in different AWS Regions for disaster recovery.
+
+Lifecycle Rules — automate storage class transitions 
+S3 Lifecycle Rules are automated configurations applied to a bucket that manage your objects over their lifetime, cutting down storage costs without manual intervention.
+Core Actions You Can Automate
+Transition Actions (Moving Classes): Automatically shift objects to a cheaper storage class based on their age.
+Example: Move logs from S3 Standard to S3 Standard-IA after 30 days, then down to S3 Glacier Flexible Retrieval after 90 days.
+Expiration Actions (Deletion): Automatically delete objects or clean up temporary/expired files when they are no longer needed.
+Example: Delete temporary downloads or old system exports after 7 days.
+Scoping and Filtering Rules
+You can target specific data sets instead of applying a blanket rule across an entire bucket using:
+Prefixes (Folders): Apply rules only to a specific path (e.g., logs/ or backups/).
+Object Tags: Target files that match specific metadata tags (e.g., Environment: Test).
+Object Size Filters: Filter out tiny files (e.g., objects under 128 KB), preventing inefficient transitions that cost more in management overhead than they save.
+Managing Versioned Buckets
+If Versioning is enabled, lifecycle rules can target two types of object versions independently:
+Current Versions: The latest active version of an object.
+Noncurrent Versions: Older overwritten or deleted versions of an object.
+Best Practice: Set rules to transition noncurrent versions to Glacier quickly and permanently expire them after a set time (e.g., clean up old versions after 30 days) to prevent hidden storage bloat.
+Critical Guardrails & Rules to Remember
+Minimum Storage Durations (Avoid Early Deletion Fees): AWS enforces minimum active days before you can transition or delete objects without a penalty:
+Standard-IA / One Zone-IA: 30 days
+Glacier Instant / Flexible Retrieval: 90 days
+Glacier Deep Archive: 180 days
+If you move or delete a file before these limits expire, AWS still bills you for the remainder of the minimum duration window.
+5. S3 Versioning — protect against accidental deletion 
+S3 Versioning is a powerful bucket-level feature designed to protect your data against accidental overwrites and deletions. Once enabled, it ensures that every modification or removal creates a historical trail rather than destroying data permanently.
+How S3 Versioning Works
+Unique Version IDs: Every object uploaded, modified, or deleted is automatically assigned a distinct system-generated Version ID (e.g., v1, v2).
+Overwriting Protection: If you upload a file with the exact same name (key) as an existing file, S3 does not overwrite it. Instead, it marks the new upload as the Current Version and preserves the older file as a Noncurrent Version.
+The "Delete Marker" Mechanism:
+When you issue a delete request for an object, S3 does not actually delete it.
+Instead, it places a Delete Marker on top of the file, making it appear invisible or deleted to standard client requests.
+Because the original data version still exists safely underneath, you can simply remove or hide the delete marker to instantly "undelete" the file.
+Permanent Deletion vs. Accidental Deletion
+Standard Deletion: Clicking "delete" on an object simply adds a delete marker and turns the file into a noncurrent version. It can still be recovered.
+Permanent Deletion: To truly wipe a file out forever, a user must explicitly target a specific Version ID for deletion (DeleteObjectVersion).
+Advanced Safety Layers
+MFA Delete: You can layer Multi-Factor Authentication on top of versioning. When MFA Delete is enabled, permanently deleting an object version or changing the bucket's versioning state requires both your AWS credentials and a valid physical MFA device code (restricted to the account root user).
+S3 Object Lock (Compliance/Governance Mode): If versioning isn't strict enough, Object Lock lets you write WORM (Write Once, Read Many) policies, making it physically impossible for anyone—even root administrators—to delete or overwrite objects for a specified retention period.
+
