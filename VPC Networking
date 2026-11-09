@@ -1,0 +1,149 @@
+1. What is an Amazon VPC?
+Answer: Amazon Virtual Private Cloud (VPC) is a logically isolated network in AWS where we define an IP address range and deploy resources such as EC2 instances and RDS databases. We control the network design using subnets, route tables, gateways, and security controls.
+Example: We can place a web server in a public subnet and a database in a private subnet inside the same VPC.
+2. What is the difference between a VPC and a subnet?
+Answer: A VPC is the overall virtual network. A subnet is a smaller IP range carved out of the VPC CIDR and associated with a single Availability Zone.
+Example: A VPC with 10.0.0.0/16 could contain subnets such as 10.0.1.0/24 and 10.0.2.0/24, provided the subnet ranges do not overlap.
+3. What is CIDR notation, and how do you calculate IP addresses?
+Answer: CIDR (Classless Inter-Domain Routing) represents an IP range using a prefix length. For IPv4, the total number of addresses is 2^(32 − prefix length).
+CIDR
+Total IPv4 addresses
+/16
+65,536
+/20
+4,096
+/24
+256
+
+AWS reserves five IPv4 addresses in each subnet, so the number available for resources is lower than the total. For example, a /24 subnet has 251 assignable IPv4 addresses in AWS.
+4. What is the difference between a public subnet and a private subnet?
+Answer: The distinction is based mainly on routing, not just on the resource's public IP address. A public subnet has a route to an Internet Gateway. A private subnet does not have a direct route to an Internet Gateway.
+Example: A public-facing load balancer may be placed in public subnets, while application servers and RDS databases can be placed in private subnets. A private subnet may still have outbound access through a NAT Gateway.
+5. What is an Internet Gateway (IGW)?
+Answer: An Internet Gateway is a horizontally scaled, redundant VPC component that allows communication between a VPC and the internet when the routing and addressing requirements are met. It must be attached to the VPC, and the relevant subnet route table needs a route such as 0.0.0.0/0 → IGW.
+Important: A route to an IGW alone does not make an EC2 instance reachable from the internet. The instance also needs suitable addressing and security rules.
+6. What is a NAT Gateway, and why do we use it?
+Answer: A NAT Gateway lets resources in private subnets initiate connections to external IPv4 destinations without allowing unsolicited inbound connections from those destinations.
+Example: Private EC2 instances can download operating-system updates through a public NAT Gateway placed in a public subnet. The private subnet's route table sends internet-bound traffic to the NAT Gateway.
+Cost note: NAT Gateways incur charges, so unused gateways should be removed after practice.
+7. What is the difference between an Internet Gateway and a NAT Gateway?
+Answer:
+Internet Gateway: Provides the VPC's internet connectivity path for resources with suitable routes, addresses, and security rules.
+NAT Gateway: Allows private-subnet resources to initiate outbound IPv4 connections without being directly reachable through that NAT path from the internet.
+A public NAT Gateway is placed in a public subnet and needs a route to an Internet Gateway for internet access.
+8. What is a route table in AWS VPC?
+Answer: A route table contains rules that determine the next hop for network traffic based on its destination IP range. Each subnet is associated with a route table, either explicitly or through the VPC's main route table.
+Example:
+10.0.0.0/16 → local allows routing within the VPC.
+0.0.0.0/0 → IGW provides a default internet route for a public subnet.
+0.0.0.0/0 → NAT Gateway provides outbound internet routing for an appropriate private subnet.
+AWS route tables perform routing; they are not equivalent to Linux iptables, which is primarily used for packet filtering and network address translation on a host.
+9. What is a VPC endpoint? Why might you use an S3 Gateway Endpoint?
+Answer: A VPC endpoint provides a private path from a VPC to supported AWS services without requiring traffic to traverse the public internet. An S3 Gateway Endpoint can route supported S3 traffic through route tables, often avoiding NAT Gateway data-processing charges for that traffic.
+Example: A private EC2 instance can access an S3 bucket through an S3 Gateway Endpoint without needing a NAT Gateway solely for S3 access. Endpoint policies, IAM policies, bucket policies, and routes must still permit the request.
+10. What are VPC DNS resolution and DNS hostnames?
+Answer: DNS resolution lets resources resolve DNS names to IP addresses. DNS hostnames allows AWS to assign DNS hostnames to supported resources. These are separate VPC attributes and should be configured appropriately for the intended design.
+Example: If an application connects to an RDS endpoint by DNS name, DNS resolution must work and the network path and security rules must also allow the connection.
+11. What is VPC peering?
+Answer: VPC peering connects two VPCs so that resources can communicate using private IP addresses, subject to routes and security controls. It can connect VPCs in the same or different AWS accounts and Regions.
+To establish connectivity, the requester creates a peering request, the accepter accepts it, and the relevant route tables are updated on both sides. 
+12. Why can two VPCs with overlapping CIDR ranges not be peered ?
+Answer: Overlapping IPv4 CIDR ranges make routing ambiguous because the same destination address range could exist in both VPCs. VPC peering does not support this overlap.
+
+
+Example: If both VPCs use 10.0.0.0/16, redesign one VPC with a non-overlapping range and migrate or readdress resources as needed before peering.
+13. Does VPC peering support transitive routing?
+Answer: No. VPC peering is non-transitive.
+If VPC-A peers with VPC-B and VPC-B peers with VPC-C, VPC-A cannot use VPC-B as a transit path to reach VPC-C. Create a direct peering connection where suitable, or consider AWS Transit Gateway for a larger hub-and-spoke design.
+14. Does accepting a VPC peering request automatically enable traffic in both directions?
+Answer: Accepting the request activates the peering connection, but it does not automatically configure end-to-end communication. Routes must be configured on both sides, and security groups and network ACLs must allow the traffic.
+A single peering connection can support traffic initiated in either direction when routing and security controls allow it; a second peering connection is not normally required just to make the connection bidirectional.
+15. How would you securely connect to an RDS database in a private subnet?
+Answer: Keep the database private and connect through an approved access path, such as a bastion/jump host, VPN, or managed session access. Permit the database port in the RDS security group only from the required application or jump-host security group.
+Example: For MySQL, allow TCP 3306 from the jump host's security group to the RDS security group. Avoid exposing RDS publicly as a default design choice.
+16. What is the difference between TCP and UDP?
+Answer: TCP is connection-oriented and provides reliable, ordered delivery using acknowledgements and retransmissions. Its connection setup commonly uses a three-way handshake: SYN, SYN-ACK, ACK. UDP is connectionless and does not itself guarantee delivery, ordering, or retransmission.
+Examples: HTTPS commonly uses TCP; DNS commonly uses UDP for standard queries, but can also use TCP. Real-time media often uses UDP when lower latency is preferred.
+17. Explain the OSI model and identify the layers most relevant to DevOps troubleshooting.
+Answer: The OSI model has seven conceptual layers:
+Layer 7 — Application: HTTP, DNS and application protocols.
+Layer 6 — Presentation: Data representation and encryption concepts.
+Layer 5 — Session: Session management.
+Layer 4 — Transport: TCP/UDP and ports.
+Layer 3 — Network: IP addressing and routing.
+Layer 2 — Data Link: Ethernet and MAC addressing.
+Layer 1 — Physical: Physical links and hardware.
+DevOps troubleshooting often focuses on Layers 3, 4 and 7: confirm the destination IP and route, test port reachability, and then inspect the application response.
+18. What is the difference between a forward proxy and a reverse proxy?
+Answer: A forward proxy represents clients when they access external services. It can be used for outbound access controls and auditing. A reverse proxy sits in front of servers and receives client requests before forwarding them to backend services.
+Example: A corporate proxy can restrict users' outbound web access. NGINX can act as a reverse proxy in front of application servers.
+19. What is an egress-only Internet Gateway?
+Answer: An egress-only Internet Gateway enables outbound-only internet connectivity for IPv6 traffic from a VPC. It allows instances to initiate outbound connections while preventing the internet from initiating connections back through that gateway. Security rules and routing still need to be configured correctly.
+20. How would you design a highly available VPC for a web application and database?
+Answer: A common design uses at least two Availability Zones:
+Public subnets for an internet-facing load balancer.
+Private application subnets for application instances.
+Private database subnets for RDS, configured with appropriate subnet groups and security controls.
+Route tables separated by subnet purpose.
+NAT Gateway capacity and routes planned per Availability Zone where required for availability.
+VPC endpoints for suitable AWS service traffic, such as S3.
+Security groups that allow only required flows, plus monitoring and logging.
+The final design should consider availability, security, traffic flow, and cost rather than simply placing everything in public subnets.
+
+
+
+
+—-------------------------------------------------------------------------------------------------------------------------
+1. What is the fundamental difference between an AWS Security Group and a Network ACL?
+Answer: A Security Group operates at the instance/ENI level, is stateful (return traffic is automatically allowed), and supports only ALLOW rules. A Network ACL (NACL) operates at the subnet boundary, is stateless (inbound and outbound rules must be configured separately), supports both ALLOW and DENY rules, and evaluates rules in strict numerical order.
+2. What does it mean that Security Groups are "stateful"?
+Answer: "Stateful" means the firewall automatically tracks the state of active network connections. If an inbound request is permitted by an inbound rule (e.g., port 443), the corresponding outbound response traffic is automatically allowed to leave the instance, regardless of outbound security group rules.
+3. What does it mean that Network ACLs are "stateless"?
+Answer: "Stateless" means the firewall evaluates each packet independently without connection tracking. If inbound traffic is allowed on port 80, the return response packets must be explicitly permitted by an outbound NACL rule (typically on ephemeral ports 1024–65535); otherwise, return traffic is dropped.
+4. How are Network ACL rules evaluated when processing network traffic?
+Answer: NACL rules are processed in ascending numerical order (e.g., 100, 110, 200). When a packet matches a rule, the action (ALLOW or DENY) is applied immediately, and evaluation stops. Any packet that does not match an explicit rule hits the default asterisk (*) rule and is denied.
+5. Why should you number NACL rules in increments of 10 or 100?
+Answer: Numbering rules in increments (such as 100, 110, 120) leaves room to insert new rules between existing rules later (e.g., adding rule 105 to block a specific IP) without having to delete and recreate subsequent rules.
+6. What are ephemeral ports, and why are they critical in NACL configuration?
+Answer: Ephemeral ports are short-lived, dynamic transport ports (typically TCP 1024–65535) chosen automatically by a client operating system when initiating outbound network connections. Because NACLs are stateless, return traffic from external servers targeting these client ports will be dropped unless inbound NACL rules explicitly allow ephemeral ports.
+7. What is Security Group chaining (referencing)?
+Answer: Security Group chaining is the practice of specifying another Security Group ID (e.g., sg-web-xxxx) as the source or destination in a security group rule instead of an IP CIDR block. It ensures that only instances associated with the referenced security group can communicate with the target, providing seamless scaling without managing individual IP addresses.
+8. How do you design a secure 3-tier application architecture using Security Groups?
+Answer:
+Web Tier: Allows inbound HTTP (80) and HTTPS (443) from 0.0.0.0/0.
+Application Tier: Allows inbound custom application port (e.g., 8080) strictly from the Web Security Group ID.
+Database Tier: Allows inbound database port (e.g., 3306 for MySQL) strictly from the Application Security Group ID.
+9. What is VPC Peering, and what is its primary CIDR constraint?
+Answer: VPC Peering is a private networking connection between two VPCs enabling direct communication over private IP addresses via the AWS global network backbone. Its primary constraint is that the two VPCs must have non-overlapping CIDR blocks.
+10. Does AWS VPC Peering support transitive routing?
+Answer: No. VPC Peering does not support transitive routing. If VPC A is peered with VPC B, and VPC B is peered with VPC C, traffic from VPC A cannot route through VPC B to reach VPC C. A direct peering connection or an AWS Transit Gateway is required.
+11. What is the difference between High Availability (HA) and Disaster Recovery (DR)?
+Answer: High Availability (such as Multi-AZ) is deployed within a single AWS Region across multiple Availability Zones using synchronous replication to protect against hardware or data center failures with automatic failover. Disaster Recovery spans multiple AWS Regions using asynchronous replication to ensure business continuity in the event of an entire regional catastrophe.
+12. What do RTO and RPO stand for in Disaster Recovery planning?
+Answer:
+RTO (Recovery Time Objective): The maximum acceptable duration of system downtime to restore application availability following a disaster.
+RPO (Recovery Point Objective): The maximum acceptable amount of data loss measured in time between the last data backup/sync and the failure event.
+13. Name the four AWS Disaster Recovery strategies from lowest to highest cost.
+Answer:
+Backup and Restore (lowest cost, highest RTO/RPO).
+Pilot Light (minimal core data replicated, compute scaled up upon disaster).
+Warm Standby (scaled-down full environment continuously running).
+Multi-Region Active-Active (highest cost, near-zero RTO/RPO, full traffic active in multiple regions).
+14. Can an RDS Multi-AZ standby instance process read traffic?
+Answer: No. In standard RDS Multi-AZ, the standby instance is purely passive for high availability and automated failover. It cannot serve read or write queries. To serve read traffic, you must create an RDS Read Replica.
+15. What are the key differences between RDS Multi-AZ and RDS Read Replicas?
+Answer:
+Multi-AZ: Synchronous physical replication, intra-region across AZs, passive standby, automatic DNS failover, zero read scaling.
+Read Replica: Asynchronous logical replication, same-region or cross-region, active reader endpoint, manual promotion to primary, used for read scaling and Disaster Recovery.
+16. How does AWS Route 53 support Disaster Recovery architectures?
+Answer: Route 53 provides DNS Health Checks and Failover Routing Policies. When health checks detect that the primary region's endpoints are unresponsive, Route 53 automatically updates DNS records to route global user traffic to the secondary Disaster Recovery region.
+17. How can you immediately block a single malicious IP address from attacking an EC2 instance?
+Answer: Add an inbound rule to the Network ACL (NACL) associated with the instance's subnet with a low rule number (e.g., Rule 50), specifying the malicious IP (e.g., 203.0.113.45/32) and setting the action to DENY. Security Groups cannot be used because they do not support deny rules.
+18. What is the role of an AWS RDS Proxy in database architecture?
+Answer: RDS Proxy maintains a managed pool of database connections, reducing CPU and memory overhead on the database caused by opening and closing connections. It accelerates application failover times by up to 66% and can route queries efficiently between reader and writer endpoints.
+19. What is AWS Transit Gateway, and when is it preferred over VPC Peering?
+Answer: AWS Transit Gateway is a centralized cloud router that connects hundreds or thousands of VPCs and on-premises networks in a hub-and-spoke topology. It is preferred over VPC Peering when managing complex multi-VPC environments, as it eliminates the need to manage complex, non-transitive point-to-point peering meshes (�(�−1)/2 connections).
+20. If an EC2 instance has multiple Security Groups attached, how does AWS evaluate them?
+Answer: AWS evaluates all rules across all attached Security Groups cumulatively. If any rule across any attached security group allows the traffic, the packet is permitted.
+
+
