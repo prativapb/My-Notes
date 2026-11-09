@@ -1,0 +1,42 @@
+1. Scenario: Your AWS bill is higher than expected, but you do not know which service caused it. What is your first step?
+Answer: Open AWS Cost Explorer and group costs by service, region, usage type, and time period. Compare the current period with previous periods, then inspect the detailed billing data for the largest increases. Start with evidence from the bill rather than deleting resources blindly.
+2. Scenario: You want to be notified when monthly AWS spending approaches ₹10,000.
+Answer: Create an AWS Budget with a monthly cost budget of ₹10,000 and configure alerts at useful thresholds, such as 80% and 100%. Send notifications through email or SNS. Remember that budget alerts are not necessarily real-time and do not automatically stop resources unless you build a separate control.
+3. Scenario: Your AWS bill suddenly jumps overnight.
+Answer: Use Cost Anomaly Detection to identify unusual spending patterns and configure alerts to the responsible team. Then use Cost Explorer and service-level metrics to investigate the source—for example, an unexpected compute workload, data transfer, or storage growth. Treat the alert as a starting point for investigation, not a root-cause diagnosis.
+4. Scenario: Several EC2 instances have low CPU utilization for weeks.
+Answer: Use CloudWatch metrics and AWS Compute Optimizer recommendations to review CPU, memory where available, network, and workload patterns. Right-size instances or stop non-production instances outside working hours where safe. Validate performance and availability requirements before making changes.
+5. Scenario: A development EC2 instance is used only from 9 AM to 6 PM on weekdays.
+Answer: Automate start/stop scheduling outside working hours if the workload can be stopped safely. Check dependencies, local data, and whether the instance must be available for background jobs. Calculate savings from the hours avoided, while accounting for storage and other resources that continue to incur charges.
+6. Scenario: An EC2 workload runs 24/7 with stable, predictable usage.
+Answer: Compare On-Demand pricing with Savings Plans or Reserved Instances, as appropriate for the service and commitment model. Use historical usage and a forecast before committing. Keep flexible or variable workloads on a suitable on-demand model when commitment would add risk.
+7. Scenario: A batch job can be interrupted and restarted without losing work.
+Answer: Evaluate Spot Instances for eligible compute workloads because they can be cheaper than On-Demand capacity but may be interrupted. Build checkpointing, retries, and interruption handling. Do not use Spot for workloads that cannot tolerate interruption without a fallback plan.
+8. Scenario: Your team launched a GPU instance for testing, but it is mostly idle.
+Answer: Confirm whether the GPU is actually needed, then stop or terminate the instance when unused, or choose a smaller/appropriate instance for the task. Check attached storage and other resources that may continue to cost money after stopping the instance.
+9. Scenario: Your Lambda image-resizing function is used only a few times per hour, but the team keeps an EC2 server running 24/7 for the same task.
+Answer: Evaluate migrating the task to Lambda if it fits Lambda's duration, runtime, and resource limits. Compare full solution costs, including requests, duration, memory, S3, CloudWatch, SNS, and data transfer. The session's architecture illustrates how event-driven processing can avoid paying for an idle application server.
+10. Scenario: A Lambda function runs very frequently and takes longer than expected.
+Answer: Use CloudWatch to inspect invocation count, duration, errors, and memory use. Optimize code and dependencies, tune memory based on measured performance, and consider batching or event filtering where appropriate. Estimate cost using actual request and duration patterns rather than assuming Lambda is always cheaper than EC2.
+11. Scenario: Your bill includes unexpected NAT Gateway charges.
+Answer: Review NAT Gateway hourly charges and data processing, route tables, traffic volume, and data paths. Where secure and appropriate, reduce unnecessary NAT traffic, use suitable VPC endpoints for supported AWS services, and avoid needless cross-AZ or cross-region data movement. Validate architecture and security before changing routes.
+12. Scenario: An application transfers large amounts of data between AWS regions.
+Answer: Identify why cross-region transfer is required and measure the data volume and transfer charges. Keep data and compute close when latency, resilience, and compliance allow; reduce duplicate transfers and cache or compress data where appropriate. Do not remove cross-region replication if it is a required recovery or compliance control.
+13. Scenario: An S3 bucket stores years of old logs and images that are rarely accessed.
+Answer: Review access patterns and retention requirements. Apply S3 Lifecycle policies to transition eligible objects to lower-cost storage classes or expire data that is no longer required. Check retrieval fees, minimum storage-duration charges, and restore times before moving data.
+14. Scenario: Your application keeps multiple copies of the same processed images.
+Answer: Inspect object keys, versions, lifecycle settings, and application behavior. Remove duplicates only after confirming they are not needed, and set lifecycle or retention policies where suitable. In the session project, separate source and output buckets helped organize the workflow, but two buckets alone do not reduce storage costs.
+15. Scenario: You have unused EBS volumes left after terminating EC2 instances.
+Answer: Use inventory and billing data to find unattached volumes, snapshots, and other orphaned resources. Confirm ownership and backup requirements before deleting them. Track resources with tags so teams can identify the owner and purpose before cleanup.
+16. Scenario: Your database instance is much larger than its actual workload requires.
+Answer: Review database metrics, performance requirements, storage, connections, and peak periods. Test a smaller supported instance or suitable database configuration in a safe environment, then right-size with a rollback plan. Do not optimize cost at the expense of required availability or latency.
+17. Scenario: The team cannot tell which project or department owns the AWS spend.
+Answer: Establish a tagging standard for application, environment, owner, and cost center. Apply tags consistently and use Cost Explorer and cost allocation reporting to break down spending. Define ownership for shared services where a single resource supports multiple teams.
+18. Scenario: Leadership wants one dashboard of savings opportunities across multiple AWS accounts.
+Answer: Use Cost Optimization Hub to consolidate eligible recommendations, with the appropriate account and organization setup. Use AWS Trusted Advisor and Compute Optimizer as complementary sources for resource and architecture recommendations. Assign owners, prioritize by estimated impact and effort, and track implementation rather than just collecting recommendations.
+19. Scenario: You receive a cost alert, but no one acts on it.
+Answer: Route budget and anomaly alerts to a monitored team channel or email distribution list, define an owner and response time, and document an escalation path. For important workloads, build a review process that connects the alert to Cost Explorer, resource metrics, and a remediation ticket. Alerts are useful only when someone investigates and acts.
+20. Scenario: Students finish the Terraform lab but leave resources running.
+Answer: Make cleanup part of the lab checklist. Run terraform destroy after validating the output, inspect the plan before approving, and verify the resources were removed. Check for leftover S3 objects, CloudWatch log groups, snapshots, or manually created resources. Set a budget alert for the lab account and never assume all resources are free.
+
+
