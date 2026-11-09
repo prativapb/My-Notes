@@ -1,0 +1,88 @@
+1. What is AWS Lambda?
+Answer: AWS Lambda is a serverless compute service that runs code in response to events. AWS manages the underlying servers, so the team does not need to provision or maintain a server for each function. It is especially useful for short, event-driven tasks such as image processing, scheduled jobs, and automation.
+2. What does “serverless” mean in AWS Lambda?
+Answer: Serverless does not mean that servers do not exist. It means AWS manages the servers and much of the infrastructure operation for us. We focus on code, configuration, permissions, and integrations.
+3. How is Lambda pricing different from EC2 pricing?
+Answer: Lambda charges are mainly based on requests and execution duration, with memory configuration also affecting compute cost. EC2 generally charges for the instance while it is running. Lambda can be economical for intermittent workloads because there is no continuously running application server to pay for. Other services used by the solution can still incur charges.
+4. When would you choose Lambda instead of EC2?
+Answer: I would consider Lambda for short, event-driven or scheduled jobs that do not need to run continuously. EC2 may be a better fit for applications that need a continuously running process, specialized operating-system control, or workloads that exceed Lambda's execution limits.
+5. How is an AWS Lambda function triggered?
+Answer: A Lambda function can be invoked by supported AWS services or applications, including S3 events, EventBridge schedules, API Gateway, and other event sources. It can also be invoked manually or through the AWS SDK/CLI, subject to permissions.
+6. Explain the S3-to-Lambda integration.
+Answer: An S3 event notification can invoke Lambda when an object is created or another configured event occurs. In the session project, uploading an image to the source S3 bucket triggers the Python function, which resizes the image and saves the result to a separate destination bucket.
+7. Why did the image-resizing project use two S3 buckets?
+Answer: One bucket stores original images and the other stores resized outputs. This separates source files from processed files and makes the flow easier to manage. The separation is architectural; using two buckets does not automatically reduce storage cost.
+8. What is the role of IAM in Lambda?
+Answer: IAM controls what a Lambda function and the person or automation deploying it are allowed to do. The function's execution role should grant only the permissions it needs, such as reading from the source bucket, writing to the destination bucket, and publishing to an SNS topic if required.
+9. What is Amazon CloudWatch used for with Lambda?
+Answer: CloudWatch collects Lambda logs and metrics. It helps us inspect execution details, duration, errors, memory usage, initialization time, and other operational signals. We use these logs to troubleshoot failures and understand performance and cost drivers.
+10. How does Amazon SNS fit into the image-resizing project?
+Answer: SNS sends a notification when the workflow reaches the configured notification step. The session used an email subscription. The recipient must confirm the subscription before email notifications can be delivered.
+11. Why use Terraform with Lambda?
+Answer: Terraform defines infrastructure as code, making the deployment repeatable and reviewable. In the session, Terraform created the Lambda function, IAM resources, two S3 buckets, S3 event integration, SNS topic, and subscription-related resources.
+12. What are the main steps to deploy the session's image-resizing pipeline?
+Answer: Configure the required variables securely, run terraform init, terraform validate, and terraform plan, review the plan, then run terraform apply. Upload a supported image, verify the output bucket, inspect CloudWatch logs, confirm the SNS email subscription, and destroy test resources when finished.
+13. What is the maximum execution time of a Lambda invocation?
+Answer: The session notes describe a maximum of 15 minutes per invocation. Lambda is therefore not the right choice for every long-running workload. Check the current AWS documentation and the chosen invocation model when designing a production solution.
+14. How does Lambda scale?
+Answer: Lambda can increase concurrent executions in response to demand, subject to account and function concurrency quotas and event-source limits. Production designs should consider concurrency limits, downstream capacity, retries, and throttling rather than assuming capacity is unlimited.
+15. What happens if the Lambda function receives an unsupported file?
+Answer: The function may fail if its code expects an image but receives a Word document, video, or another unsupported format. The session's function was designed for PNG/JPG inputs. Validate file type and size before processing, handle errors safely, and use CloudWatch logs to diagnose failures.
+16. Why might an S3 upload fail to trigger Lambda?
+Answer: Possible causes include a missing or incorrect S3 event notification, missing Lambda invoke permission, a region or configuration mismatch, an event filter that excludes the object, or uploading to the wrong bucket. Check the S3 notification configuration, Lambda resource policy, and CloudWatch logs/metrics.
+17. What does “SNS subscription pending confirmation” mean?
+Answer: For an email subscription, SNS sends a confirmation email. Until the recipient clicks the confirmation link, the subscription remains pending and notifications are not delivered to that email address. Check spam/junk folders and verify the configured email address.
+18. How would you troubleshoot a Lambda 403 or access-denied error?
+Answer: Identify which principal is denied: the deployment identity, Lambda execution role, or service-to-service invocation. Review the relevant IAM identity policy, resource policy, bucket policy, permissions boundary, and organization-level controls. Grant only the missing, required permissions rather than defaulting to broad administrator access.
+19. How would you migrate an occasional EC2 task to Lambda?
+Answer: First confirm the task is short-running, event-driven, and compatible with Lambda's runtime and limits. Separate the business logic from server-specific assumptions, package dependencies, configure triggers and IAM permissions, add logging/error handling, test the function, and compare the full cost—including S3, logs, notifications, and data transfer—before retiring EC2.
+20. How would you explain the image-resizing project in an interview?
+Answer: “I built an event-driven image-processing pipeline using S3, Lambda, SNS, CloudWatch, IAM, and Terraform. When an image was uploaded to the source bucket, an S3 event invoked a Python Lambda function that resized the image with Pillow and saved it to a destination bucket. CloudWatch captured execution logs, and SNS sent an email notification. Terraform provisioned the infrastructure, and I destroyed the test resources after validation to avoid ongoing charges.”
+
+
+================================================================================
+
+Scenario Based
+
+1. Scenario: A user uploads a PNG to S3. You need to resize it automatically. How would you design it?
+Answer: Configure an S3 object-created event on the source bucket to invoke Lambda. The Python function reads the image, resizes it using Pillow, and writes the output to a separate destination bucket. Add an execution role with least-privilege S3 permissions, CloudWatch logging, and error handling.
+2. Scenario: The resized image triggers Lambda again and creates a loop. How do you fix it?
+Answer: Use separate source and destination buckets, as in the session project. If one bucket must be used, configure event filters for a dedicated input prefix and write outputs to a different prefix that the trigger ignores. Avoid allowing generated outputs to match the same trigger.
+3. Scenario: Images are uploaded, but no resized files appear. What do you check?
+Answer: Confirm the upload went to the correct source bucket and region, verify the S3 event notification and Lambda invoke permission, inspect Lambda metrics and CloudWatch logs, and check the function's execution role for source-read and destination-write permissions.
+4. Scenario: Lambda runs, but it fails with AccessDenied when reading the source image.
+Answer: Check the Lambda execution role and the source bucket policy. Ensure the role has the required s3:GetObject permission for the correct bucket and object ARN. Also review any permissions boundary, SCP, or explicit deny. Do not add broad permissions without identifying the denied action.
+5. Scenario: The function resizes an image but cannot save it to the output bucket.
+Answer: Verify the destination bucket name, region, encryption settings, and network/configuration assumptions. Ensure the execution role has s3:PutObject on the correct destination object ARN and that the bucket policy permits the action.
+6. Scenario: SNS does not send the completion email.
+Answer: Check that the SNS topic ARN is correct, the function has permission to publish, and the email subscription is confirmed. Verify the address in Terraform variables and check inbox/spam for the confirmation message. Review CloudWatch logs for publish errors.
+7. Scenario: CloudWatch shows a timeout while processing large images.
+Answer: Measure execution duration and image dimensions. Optimize the image-processing logic, avoid unnecessary copies, and select suitable memory and timeout settings. If processing is too long or the workload is not compatible with Lambda's limits, use a different architecture such as a queue-backed worker service.
+8. Scenario: A Lambda function is invoked thousands of times in a short period.
+Answer: Check concurrency, throttling, duration, and downstream S3/database/API capacity. Set appropriate reserved concurrency if protecting downstream systems is necessary, and use queues such as SQS when buffering and controlled processing rates are useful. Configure retry and failure handling to avoid losing events.
+9. Scenario: A function works in the console but fails after Terraform deployment.
+Answer: Compare the deployed runtime, handler, environment variables, package/dependencies, IAM role, region, and trigger configuration with the console test. Review the Terraform plan and CloudWatch logs. Make the fix in Terraform and redeploy so the configuration remains reproducible.
+10. Scenario: terraform apply fails because an S3 bucket name contains uppercase letters.
+Answer: S3 bucket names must follow S3 naming rules and use lowercase letters. Update the bucket-name variable to a globally unique, valid lowercase name, run terraform plan, and apply again.
+11. Scenario: Terraform cannot create a Lambda function due to a 403 error.
+Answer: Identify the exact denied API action and the identity used by Terraform. Check the deployment user's IAM policy, permission boundaries, organization SCPs, and region restrictions. Add the minimum required permissions and retry. Avoid using AdministratorAccess as a permanent fix.
+12. Scenario: Students deploy the pipeline in a region where a required setup fails.
+Answer: Check that the required services and configuration are supported in that region, and confirm the provider region in Terraform matches the intended deployment. If appropriate, test in another approved region and review any data residency or governance requirements first.
+13. Scenario: A Word document is uploaded to the image input bucket.
+Answer: The image-processing code may fail because the file is not a supported image. Add file-extension and content validation, reject unsupported formats gracefully, and log the reason. Do not assume the extension alone proves the content type.
+14. Scenario: The same S3 event appears to be processed more than once.
+Answer: Design the function to be idempotent. Use deterministic output keys, detect whether the object version or event has already been processed, and avoid duplicate side effects. Event-driven systems can deliver duplicate notifications, so do not assume every event is delivered exactly once.
+15. Scenario: You need a Lambda function to run every day at 8 AM.
+Answer: Create an EventBridge scheduled rule or schedule to invoke the function at the required time. Confirm the schedule's time-zone behavior and configure the correct IAM permission. Add monitoring and failure notifications. If the requirement is local time, explicitly account for the schedule's time-zone configuration.
+16. Scenario: Your team runs a backup script on an EC2 instance every night, but the script takes only two minutes.
+Answer: Assess whether the script can run safely as a Lambda function triggered by EventBridge. Move secrets to an appropriate secrets service, configure IAM access to the backup target, and add logging and alerts. Check the execution-time, storage, networking, and dependency limits before migrating.
+17. Scenario: Lambda's memory is set very high, but the function uses little memory and runs briefly.
+Answer: Use CloudWatch metrics and repeatable tests to measure duration and memory use. Test suitable memory settings and compare total billed compute cost and performance. Do not automatically choose the lowest memory: additional memory can provide more CPU and sometimes reduce total cost.
+18. Scenario: Lambda errors rise after a new code deployment.
+Answer: Compare errors, duration, and initialization metrics before and after deployment. Inspect logs and dependency/package changes, test with representative events, and roll back to a known-good version if needed. Use versions and aliases or a controlled deployment strategy to reduce release risk.
+19. Scenario: A developer asks to put AWS access keys directly in terraform.tfvars and commit the file.
+Answer: Do not commit secrets to source control. Use an approved credential chain or secret-management approach, exclude local secret files from Git, rotate any exposed keys, and restrict access to state files because Terraform state can contain sensitive values. Prefer short-lived credentials where possible.
+20. Scenario: The project works, and the class is finished. What should you do to prevent unwanted charges?
+Answer: Run terraform destroy from the correct workspace and directory after confirming that the resources are safe to remove. Review the plan before approving destruction, verify resources were deleted, and check for leftovers such as logs, objects, snapshots, or resources created outside Terraform.
+
+
