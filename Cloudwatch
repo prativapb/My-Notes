@@ -1,0 +1,42 @@
+1. What is Amazon CloudWatch?
+Answer: Amazon CloudWatch is a fully managed AWS monitoring service. It collects metrics and logs from AWS resources and applications, helps visualize them through graphs and dashboards, and can trigger alarms when configured conditions are met.
+2. What are the four core functions of CloudWatch covered in the session?
+Answer: Collect, Monitor, Act, and Analyze. CloudWatch collects monitoring data, helps teams monitor it, can trigger configured actions or alarms, and provides graphs and dashboards for analysis.
+3. Why is centralized logging important?
+Answer: Centralized logging keeps logs in a shared location instead of relying only on individual servers. If a server is terminated or compromised and its local logs are deleted, centrally stored logs can still help with troubleshooting, security investigation, and root-cause analysis.
+4. What is the difference between a metric and a log?
+Answer: A metric is a numeric measurement, such as CPU utilization or network throughput, usually viewed as a graph. A log is a detailed record of events, messages, application activity, or errors.
+5. What is the difference between CloudWatch and CloudTrail?
+Answer: CloudWatch is mainly used to monitor resources and applications through metrics, logs, dashboards, and alarms. CloudTrail records AWS API activity and helps answer auditing questions such as who performed an action or changed a resource.
+6. What is a CloudWatch alarm?
+Answer: A CloudWatch alarm evaluates a metric against a configured condition or threshold. For example, it can enter an alarm state when average EC2 CPU utilization remains at or above 80% for the configured evaluation period.
+7. How can CloudWatch send email alerts?
+Answer: Configure a CloudWatch alarm to publish a notification to an Amazon SNS topic, then add an email subscription to that topic. The recipient must confirm the subscription before email notifications can be received.
+8. What is Amazon SNS, and how does it fit into CloudWatch alerting?
+Answer: Amazon Simple Notification Service (SNS) is a managed publish-subscribe messaging service. A topic acts as the message channel, and subscriptions define the endpoints that receive messages. CloudWatch alarms can publish notifications to an SNS topic.
+9. Why must an SNS email subscription be confirmed?
+Answer: Confirmation verifies that the email recipient wants to receive messages from the topic. Until confirmation, the subscription remains pending and the recipient may not receive alarm notifications.
+10. What is the difference between basic and detailed EC2 monitoring in the session notes?
+Answer: Basic monitoring is enabled by default and provides standard metric collection. Detailed monitoring provides more frequent metric data and must be enabled where needed; additional charges may apply. Check the current EC2 settings and pricing for the exact collection interval and cost.
+11. How do you create a CPU utilization alarm for an EC2 instance?
+Answer: Open the instance's Monitoring tab or locate its metric in CloudWatch, start alarm creation, select CPU utilization, set a threshold such as 80%, configure the period and evaluation settings, and select an SNS notification topic. Confirm the SNS email subscription and test the alert.
+12. Why should an alarm evaluate a condition over time instead of alerting on every brief spike?
+Answer: A short CPU spike may be normal and may resolve without action. Requiring a condition to persist for a configured period can reduce noisy or false-positive alerts. The right period depends on the application and operational requirements.
+13. What is a CloudWatch dashboard?
+Answer: A dashboard is a customizable view of monitoring widgets such as CPU and network graphs. It can bring metrics from multiple resources into one place, making it easier to monitor a project or environment.
+14. Can multiple EC2 instances be monitored on one dashboard?
+Answer: Yes. Add metric widgets for multiple instances to a shared dashboard. Metrics can be shown together for comparison, or separated into widgets based on operational needs.
+15. How can you monitor many servers without opening an SSH session to each one?
+Answer: Use centralized CloudWatch metrics, logs, dashboards, and alarms. This gives the operations team a shared view of resource health and helps scale monitoring across many servers.
+16. What is a CloudWatch billing alarm?
+Answer: A billing alarm monitors estimated charges using the available billing metrics and sends a notification when the configured threshold is crossed. In the session, the workflow used CloudWatch billing metrics and an SNS email topic. Billing data may be delayed, so the alarm is not a real-time spending control.
+17. How often does billing data update according to the session notes?
+Answer: The notes say estimated billing data updates approximately every six hours by default. Treat this as an approximate interval, not a guarantee, and check the AWS Billing console for current behavior.
+18. What should you check if CloudWatch metrics do not appear immediately after launching an EC2 instance?
+Answer: Allow a few minutes for initial data to appear, as discussed in the session. Confirm that you are viewing the correct instance, region, metric, and time range, and verify that the required monitoring configuration is enabled.
+19. Why should automatic actions such as rebooting or terminating an instance be used carefully?
+Answer: An alarm-driven action can affect production availability or cause data loss. The session recommendation is to use manual verification and approval before taking disruptive actions in real-world environments.
+20. How do you investigate an unexpectedly high AWS bill after a lab?
+Answer: Open Billing and Cost Management, review the bill by service and region, and look for resources such as EC2 instances, RDS databases, and load balancers that may still be running. Check all regions, stop or delete unneeded resources, and contact AWS Support through a billing case if the charge appears unexpected. Do not assume a reversal or credit is guaranteed.
+
+
