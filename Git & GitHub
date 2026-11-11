@@ -1,0 +1,90 @@
+1. What is version control, and why is it important?
+Answer: Version control records changes to files over time. It helps developers see what changed, who changed it, and when. It also supports collaboration, comparing versions, and restoring an earlier version when needed.
+2. What is Git?
+Answer: Git is open-source version control software installed on a developer's machine. It tracks local changes to files and code and lets developers create commits that represent snapshots of their work.
+3. What is GitHub?
+Answer: GitHub is a cloud-hosted service for storing Git repositories remotely. It helps developers share code and collaborate. Git is the version-control tool; GitHub is one service that hosts Git repositories.
+4. What is the difference between Git and GitHub?
+Answer:
+Git: Version-control software that runs locally and tracks changes.
+GitHub: A cloud service that hosts remote Git repositories and supports collaboration.
+Git can also work with other hosting platforms, such as GitLab and Bitbucket.
+5. What is a Git repository?
+Answer: A Git repository is a project location where Git tracks files and their history. A local repository contains project files and Git history on your machine. A remote repository, such as one hosted on GitHub, allows the project to be shared remotely.
+6. What is a commit in Git?
+Answer: A commit is a saved snapshot of staged changes. Each commit has a unique identifier and records information such as the author, time, and changes included. Clear commit messages make project history easier to understand.
+7. What is the staging area?
+Answer: The staging area is the intermediate area where you select changes to include in the next commit. Use git add to stage files, then git commit to save the staged changes in the local repository.
+8. What is the purpose of git status?
+Answer: git status shows the current state of the working directory and staging area. It helps identify untracked files, modified files, and changes that are staged for commit.
+git status
+9. What does git init do?
+Answer: git init initializes a Git repository in the current directory by creating the hidden .git directory, which stores Git's repository metadata and history.
+git init
+10. What is the difference between git add and git commit?
+Answer: git add stages selected changes for the next commit. git commit saves the staged changes as a snapshot in the local repository.
+git add README.md
+git commit -m "Add project README"
+11. What is the purpose of git push?
+Answer: git push sends local commits to a remote repository. For example, git push -u origin main pushes the local main branch to the remote named origin and sets its upstream tracking relationship.
+git push -u origin main
+12. What is a Git remote, and what does origin mean?
+Answer: A remote is a named reference to another repository, usually hosted on a platform such as GitHub. origin is the conventional default name for the remote from which a repository was cloned or the remote added for a project.
+git remote add origin <repository-url>
+13. What is the difference between git clone and fork?
+Answer: git clone downloads a repository to your local machine. A fork creates a separate copy of a repository under your own hosting-platform account. A clone is a local copy; a fork is a remote copy under a different account or namespace.
+14. Does a fork automatically receive changes from its parent repository?
+Answer: No. A fork does not automatically synchronize every change from its parent repository. You generally need to fetch or otherwise obtain upstream changes and then merge or rebase them into your fork.
+15. What is a branch in Git?
+Answer: A branch is a separate line of development. It allows work to be developed independently from another branch. The session notes mention git branch -M main, which renames the current branch to main; creating, switching, and merging branches are planned for a later session.
+16. What does git branch -M main do?
+Answer: It force-renames the current branch to main, replacing a branch name such as master when needed.
+git branch -M main
+Use this when the local branch name needs to match the branch name expected by the remote repository.
+17. What is README.md, and why is it useful?
+Answer: README.md is a Markdown file commonly used as the main introduction to a repository. It can explain what a project does, how to run it, platform requirements, licensing, and contribution guidelines.
+18. How do you configure your Git author name and email?
+Answer: Configure the name and email Git should use for commits with these commands:
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+Verify the settings with:
+git config --global --list
+These settings identify the commit author; authentication to GitHub is a separate matter.
+19. What is the difference between a working directory, staging area, and commit?
+Answer:
+Working directory: Where you edit files.
+Staging area: Where you select changes for the next commit using git add.
+Commit: The saved snapshot created by git commit.
+The typical flow is edit → stage → commit → push. Pushing sends local commits to the remote repository.
+20. What is the purpose of git revert?
+Answer: git revert creates a new commit that reverses the changes introduced by an earlier commit. It is useful when a change needs to be undone while preserving the existing history. It is different from deleting or rewriting the old commit.
+
+21. What is a remote repository, and what is origin?
+Answer: A remote repository is a version of the repository hosted elsewhere, for example on GitHub. origin is the conventional name Git assigns to the primary remote, although it can be changed.
+git remote add origin <repository-url>
+
+3. What is a pull request (PR)?
+Answer: A pull request is a request to review and merge changes from one branch into another. Reviewers can comment, request changes, and approve the proposed update before it is merged.
+14. What is the difference between a pull request and git pull?
+Answer: A pull request is a collaboration and review workflow on a hosting platform such as GitHub. The git pull command fetches remote changes and integrates them into the current local branch.
+15. What is the difference between git fetch and git pull?
+Answer: git fetch downloads remote updates but does not integrate them into the current branch. git pull fetches updates and then integrates them, usually by merging or rebasing depending on configuration and options.
+16. What causes a merge conflict?
+Answer: A merge conflict occurs when Git cannot automatically combine changes, commonly when two branches change overlapping parts of the same file. The developer must inspect the conflicting changes, decide on the correct result, and complete the merge.
+17. How can you reduce merge conflicts?
+Answer: Keep your branch updated with the target branch, communicate about shared files, make focused commits, and integrate changes regularly. The session recommends pulling the latest changes daily.
+18. What is git stash used for?
+Answer: git stash temporarily stores uncommitted changes so you can switch tasks or branches without committing unfinished work.
+git stash
+git stash pop
+19. Explain git diff and git clone.
+Answer: git diff displays differences between versions or repository states. git clone creates a local copy of an existing remote repository, including its history.
+git diff
+git clone <repository-url>
+20. What are rebase, squash, and fast-forward merge?
+Answer:
+Rebase: Replays commits on top of another base commit, changing their commit IDs when rewritten.
+Squash merge: Combines a branch's changes into a single commit on the target branch.
+Fast-forward merge: Advances the target branch pointer when it can move forward without creating a merge commit.
+Teams choose a strategy based on the desired history and repository policy.
+
