@@ -3,6 +3,7 @@ Answer: Amazon CloudWatch is a fully managed AWS monitoring service. It collects
 2. What are the four core functions of CloudWatch covered in the session?
 Answer: Collect, Monitor, Act, and Analyze. CloudWatch collects monitoring data, helps teams monitor it, can trigger configured actions or alarms, and provides graphs and dashboards for analysis.
 3. Why is centralized logging important?
+
 Answer: Centralized logging keeps logs in a shared location instead of relying only on individual servers. If a server is terminated or compromised and its local logs are deleted, centrally stored logs can still help with troubleshooting, security investigation, and root-cause analysis.
 4. What is the difference between a metric and a log?
 Answer: A metric is a numeric measurement, such as CPU utilization or network throughput, usually viewed as a graph. A log is a detailed record of events, messages, application activity, or errors.
