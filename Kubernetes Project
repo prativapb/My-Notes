@@ -1,0 +1,34 @@
+ls
+   48  cd microservices-demo/
+   49  ls
+   50  kubectl apply -f kubernetes-manifests.yaml
+   51  kubectl apply -f kubernetes-manifests
+   52  kubectl get po
+   53  kubectl get deploy
+   54  kubectl get svc
+   55  gcloud container clusters get-credentials project1 --region us-east1 --project devopsproject-510307
+   56  ls
+   57  cd microservices-demo/
+   58  kubectl kubectl create -f kubernetes-mamifests
+   59  ls
+   60  kubectl create -f kubernetes-manifest
+   61  kubectl create -f kubernetes-manifest.yaml
+   62  kubectl create -f kubernetes-manifests.yaml
+   63  kubectl create -f kubernetes-manifests
+   64  cd release/
+   65  ls
+   66  kubectl create -f kubernetes-manifests.yaml
+   67  kubectl get po
+   68  kubectl get deploy
+   69  kubectl create -f kubernetes-manifests.yaml
+   70  kubectl get po
+   71  kubectl get deploy
+   72  kubectl get po
+   73  kubectl get svc
+   74  kubectl get pod
+   75  kubectl delete paymentservice-7ff65ff5c7-xh99l
+   76  kubectl delete po paymentservice-7ff65ff5c7-xh99l
+   77  kubectl get pod
+   78  kubectl delete deploy paymentservice
+   79  kubectl get po
+   80  kubectl get svc
