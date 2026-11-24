@@ -1,0 +1,74 @@
+1. Introduction to Continuous Integration (CI)
+Continuous Integration is the practice of automatically integrating developers' code into a shared repository several times a day. Instead of waiting for days or weeks before merging code, developers frequently commit their changes. Jenkins automatically checks these changes, builds the application, and verifies whether everything is working correctly. Benefits include: Faster development Early bug detection Reduced integration conflicts Automated validation Improved code quality
+❓ Q2: Why Jenkins?
+Jenkins is an open-source automation server widely used for implementing Continuous Integration. Its primary responsibilities include: Pulling source code from Git Executing build commands Running automated tests Deploying applications Sending notifications Executing scripts automatically
+3. Problems Without Jenkins
+Without automation: Developers manually download code. Manual builds consume time. Human errors increase. Deployments become inconsistent. Bug detection happens late. Teams waste time performing repetitive tasks. Jenkins automates all these activities.
+4. Jenkins Architecture
+The instructor explained the major Jenkins components: Jenkins Server Dashboard Plugins Jobs Workspace Build Executor Console Output Build History Every build request flows through these components until completion.
+5. GitHub Integration
+Developers push code to GitHub. Jenkins connects to GitHub using: Repository URL Credentials Authentication Whenever code changes occur, Jenkins detects the changes and starts the build process automatically.
+6. Build Triggers
+The session explained multiple methods to trigger Jenkins builds. Manual Trigger Developer clicks Build Now. Poll SCM Jenkins periodically checks GitHub for changes. GitHub Webhook GitHub immediately informs Jenkins after every push. Webhook is faster and more efficient than polling.
+7. Jenkins Job
+A Job defines what Jenkins should execute. Typical job configuration includes: Git repository Branch Build commands Post-build actions Build triggers
+8. Jenkins Plugins
+Plugins extend Jenkins functionality. Examples discussed: Git Plugin GitHub Plugin Pipeline Plugin Credentials Plugin Plugins allow Jenkins to integrate with hundreds of external tools.
+9. Build Execution Flow
+Typical workflow:
+Developer
+↓
+Git Commit
+↓
+GitHub Repository
+↓
+Webhook / Poll SCM
+↓
+Jenkins
+↓
+Download Source Code
+↓
+Build Application
+↓
+Run Tests
+↓
+Generate Console Logs
+↓
+Build Success / Failure
+10. Console Output
+Console Output helps identify: Compilation errors Test failures Missing dependencies Script execution Successful completion It is the first place DevOps engineers check during troubleshooting.
+11. Build History
+Every Jenkins execution is stored. History contains: Build Number Build Status Execution Time Console Logs Trigger Information This makes debugging significantly easier.
+12. CI Best Practices
+The instructor highlighted several best practices: Commit small changes frequently. Automate builds. Automate testing. Keep pipelines simple. Monitor failed builds immediately. Use Webhooks instead of Poll SCM whenever possible. Install only required plugins. Maintain Jenkins backups.
+10 Basic to Advanced Interview Questions
+❓ Q1: What is Continuous Integration?
+Answer Continuous Integration is the practice of frequently merging code into a shared repository where automated builds and tests validate every change before integration.
+❓ Q2: What is Jenkins?
+Answer Jenkins is an open-source automation server used for Continuous Integration and Continuous Delivery. It automates building, testing, and deployment processes.
+❓ Q3: Why is Jenkins popular?
+Answer Open source Large plugin ecosystem Easy integration Supports multiple languages Pipeline as Code Distributed builds
+Difference between CI and CD? Answer CI focuses on integrating code continuously. CD focuses on delivering or deploying applications automatically after successful builds.
+What is a Jenkins Pipeline? Answer A Jenkins Pipeline is a scripted workflow that defines the stages of software delivery using a Jenkinsfile.
+What is a Jenkinsfile? Answer A Jenkinsfile is a text file stored inside a repository that contains pipeline definitions written in Groovy syntax.
+Difference between Freestyle and Pipeline Job? Answer Freestyle jobs are GUI-based and suitable for beginners. Pipeline jobs are code-based, version controlled, reusable, and preferred for production.
+What are Jenkins Plugins? Answer Plugins extend Jenkins functionality by adding integrations such as Git, Docker, Maven, Kubernetes, Slack, Email, AWS, Azure, and hundreds more.
+How does Jenkins detect code changes? Answer Using: Poll SCM GitHub Webhooks Manual Build Scheduled Triggers
+10. Explain Jenkins Architecture.
+Answer
+Developer pushes code to Git.
+↓
+GitHub stores repository.
+↓
+Webhook triggers Jenkins.
+↓
+Jenkins checks out code.
+↓
+Build tool compiles application.
+↓
+Tests execute.
+↓
+Artifacts generated.
+↓
+Deployment begins.
+
